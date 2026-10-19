@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Gesture Video · Recognition check</title><style>body{font:16px system-ui;margin:50px;color:#254235;background:#f5f6f2}pre{white-space:pre-wrap;line-height:1.7}a{color:#23654c}</style><h1>Local recognition check</h1><p>This checks the bundled model without opening your webcam.</p><pre id="result">Loading local model…</pre><a href="/">Back to controller</a><script type="module">
+import { HandLandmarker, FilesetResolver } from '/vendor/vision_bundle.mjs';
+try {
+ const files = await FilesetResolver.forVisionTasks('/vendor/wasm');
+ const detector = await HandLandmarker.createFromOptions(files, {baseOptions:{modelAssetPath:'/hand_landmarker.task',delegate:'CPU'},runningMode:'VIDEO',numHands:2});
+ const canvas=document.createElement('canvas');canvas.width=640;canvas.height=480;const ctx=canvas.getContext('2d');ctx.fillStyle='#202020';ctx.fillRect(0,0,640,480);
+ const result=detector.detectForVideo(canvas,performance.now());detector.close();
+ if(result.landmarks.length)throw new Error('Unexpected hand on a blank test image.');
+ document.getElementById('result').textContent='PASS\nBrowser library loaded locally.\nWebAssembly runtime initialized.\nHand model loaded locally.\nInference on a blank image completed with zero hands.\n\nActual webcam gestures still need a live user test.';
+}catch(e){document.getElementById('result').textContent='FAIL\n'+e.message;}
+</script></html>
